@@ -1,25 +1,19 @@
-row_a = (0..7).to_a
-board_a = row_a.product(row_a)
+line_a = (0..7).to_a
+board_a = line_a.product line_a
 # p board_a
 
 # Creating graph (data structure) of adjacency lists type
 # Hash includes all of the 64 blocks on the chess board as individual keys
 # Their values are the blocks that can be accessed by the knight in next movefrom the key block
-board_h = board_a.to_h do |key_a|
-  i, j = key_a
+board_h = board_a.to_h do |i, j|
+  adjacency_a = [i + 2, i - 2].product([j + 1, j - 1]) +
+                [i + 1, i - 1].product([j + 2, j - 2])
+  adjacency_a.select! { |block| block.all? { |num| (0..7).include? num } }
 
-  i2_a = [i + 2, i - 2].select { |num| (0..7).include? num }
-  j1_a = [j + 1, j - 1].select { |num| (0..7).include? num }
-
-  j2_a = [j + 2, j - 2].select { |num| (0..7).include? num }
-  i1_a = [i + 1, i - 1].select { |num| (0..7).include? num }
-
-  adjacency_a = i2_a.product(j1_a) + i1_a.product(j2_a)
-  # puts "#{key_a} => #{adjacency_a}"
-  [key_a, adjacency_a]
+  [[i, j], adjacency_a] # key-value pair
 end
 
-# pp board_h
+pp board_h
 
 def knight_moves(source, dest, hash)
   match_step = source
