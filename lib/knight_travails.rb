@@ -51,8 +51,3 @@ def knight_moves(source, dest)
     stop = adj_squares.find { |square| towards_dest_check.call(square) }
   end
 end
-
-p knight_moves([0, 0], [7, 7])
-p knight_moves([0, 0], [3, 3])
-p knight_moves([0, 0], [1, 1])
-p knight_moves([2, 2], [1, 1])
