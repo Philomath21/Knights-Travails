@@ -8,11 +8,11 @@ board_a = row_a.product(row_a)
 board_h = board_a.to_h do |key_a|
   i, j = key_a
 
-  i2_a = [i + 2, i - 2].select { |num| row_a.include? num }
-  j1_a = [j + 1, j - 1].select { |num| row_a.include? num }
+  i2_a = [i + 2, i - 2].select { |num| (0..7).include? num }
+  j1_a = [j + 1, j - 1].select { |num| (0..7).include? num }
 
-  j2_a = [j + 2, j - 2].select { |num| row_a.include? num }
-  i1_a = [i + 1, i - 1].select { |num| row_a.include? num }
+  j2_a = [j + 2, j - 2].select { |num| (0..7).include? num }
+  i1_a = [i + 1, i - 1].select { |num| (0..7).include? num }
 
   adjacency_a = i2_a.product(j1_a) + i1_a.product(j2_a)
   # puts "#{key_a} => #{adjacency_a}"
@@ -21,12 +21,12 @@ end
 
 # pp board_h
 
-def knight_moves(source, dest)
+def knight_moves(source, dest, hash)
   match_step = source
   route = []
   loop do
     route.push match_step
-    adjacency_a = board_h[match_step]
+    adjacency_a = hash[match_step]
     return route + [dest] if adjacency_a.include? dest
 
     match_step = adjacency_a.find do |i_step, j_step|
@@ -45,4 +45,4 @@ def knight_moves(source, dest)
   end
 end
 
-p knight_moves([0, 0], [1, 2])
+p knight_moves([0, 0], [1, 2], board_h)
