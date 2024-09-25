@@ -37,7 +37,7 @@ def knight_moves(source, dest, hash)
 
     next unless match_step.nil?
 
-    match_step = adjacency_a.select do |i_step, j_step|
+    match_step = adjacency_a.find do |i_step, j_step|
       check2i = ((source[0]..dest[0]).to_a + (dest[0]..source[0]).to_a).include? i_step
       check2j = ((source[1]..dest[1]).to_a + (dest[1]..source[1]).to_a).include? j_step
       check2i && check2j
@@ -45,4 +45,4 @@ def knight_moves(source, dest, hash)
   end
 end
 
-p knight_moves([0, 0], [1, 2], board_h)
+p knight_moves([0, 0], [7, 7], board_h)
