@@ -1,48 +1,58 @@
-# board array containing 64 blocks on the chess board:
+# board array containing 64 squares on the chess board:
 # e.g [[0, 0], [0, 1], ...,[7, 6], [7, 7]]
-line_a = (0..7).to_a
-board_a = line_a.product line_a
-
-# Creating graph (data structure) of adjacency lists type
-# Hash includes 64 blocks as individual key & adjacency array as its value
-# (array containing blocks that can be accessed by the knight in next move)
-# e.g [0,0] => [[1,2], [2,1]]
-
-board_h = board_a.to_h do |i, j|
-  adjacency_a = [i + 2, i - 2].product([j + 1, j - 1]) +
-                [i + 1, i - 1].product([j + 2, j - 2])
-  adjacency_a.select! { |block| block.all? { |num| (0..7).include? num } }
-
-  [[i, j], adjacency_a] # key-value pair
+def create_board
+  line_a = (0..7).to_a
+  line_a.product line_a
 end
 
-# knight_moves method shows the shortest possible way to get from one
-# square (source) to another (dest) by outputting all squares (match_step)
-# the knight will stop on along the way.
-# knight_moves([3,3],[0,0]) == [[3,3],[1,2],[0,0]]
+# Creating graph (data structure) of adjacency lists type
+# Hash includes 64 squares as individual key & adjacency array as its value
+# (array containing squares that can be accessed by the knight in next move)
+# e.g [0,0] => [[1,2], [2,1]]
+def create_knight_graph
+  create_board.to_h do |x, y|
+    adj_squares = [x + 2, x - 2].product([y + 1, y - 1]) +
+                  [x + 1, x - 1].product([y + 2, y - 2])
+    adj_squares.select! { |square| square.all? { |num| (0..7).include? num } }
 
-def knight_moves(source, dest, hash)
-  match_step = source
-  route = []
-  loop do
-    route.push match_step
-    adjacency_a = hash[match_step]
-    return route + [dest] if adjacency_a.include? dest
-
-    match_step = adjacency_a.find do |i_step, j_step|
-      check1i = (dest[0] - i_step).abs <= 2
-      check1j = (dest[1] - j_step).abs <= 2
-      check1i && check1j
-    end
-
-    next unless match_step.nil?
-
-    match_step = adjacency_a.find do |i_step, j_step|
-      check2i = ((source[0]..dest[0]).to_a + (dest[0]..source[0]).to_a).include? i_step
-      check2j = ((source[1]..dest[1]).to_a + (dest[1]..source[1]).to_a).include? j_step
-      check2i && check2j
-    end
+    [[x, y], adj_squares] # key-value pair
   end
 end
 
-p knight_moves([0, 0], [7, 7], board_h)
+# knight_moves method shows the shortest possible way to get from one
+# square (source) to another (dest) by outputting all squares (stops)
+# the knight will stop on along the way.
+# knight_moves([3,3],[0,0]) == [[3,3],[1,2],[0,0]]
+
+def knight_moves(source, dest)
+  stop = source
+  route = [] # will contain source, dest & all the stops in between
+  knight_graph = create_knight_graph
+
+  adj_check = proc do |square1, square2|
+    knight_graph[square2].include? square1
+  end
+
+  towards_dest_check = proc do |square|
+    [square, source, dest] in [[x, y], [xs, ys], [xd, yd]]
+    check_x = (xs - 1..xd + 2).include?(x) || (xd - 2..xs + 1).include?(x)
+    check_y = (ys - 1..yd + 2).include?(y) || (yd - 2..ys + 1).include?(y)
+    check_x && check_y
+  end
+
+  loop do
+    route.push stop
+    return route + [dest] if adj_check.call(stop, dest)
+
+    adj_squares = knight_graph[stop]
+    stop = adj_squares.find { |square| adj_check.call(square, dest) }
+    next unless stop.nil?
+
+    stop = adj_squares.find { |square| towards_dest_check.call(square) }
+  end
+end
+
+p knight_moves([0, 0], [7, 7])
+p knight_moves([0, 0], [3, 3])
+p knight_moves([0, 0], [1, 1])
+p knight_moves([2, 2], [1, 1])
