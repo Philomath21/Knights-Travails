@@ -1,10 +1,13 @@
+# board array containing 64 blocks on the chess board:
+# e.g [[0, 0], [0, 1], ...,[7, 6], [7, 7]]
 line_a = (0..7).to_a
 board_a = line_a.product line_a
-# p board_a
 
 # Creating graph (data structure) of adjacency lists type
-# Hash includes all of the 64 blocks on the chess board as individual keys
-# Their values are the blocks that can be accessed by the knight in next movefrom the key block
+# Hash includes 64 blocks as individual key & adjacency array as its value
+# (array containing blocks that can be accessed by the knight in next move)
+# e.g [0,0] => [[1,2], [2,1]]
+
 board_h = board_a.to_h do |i, j|
   adjacency_a = [i + 2, i - 2].product([j + 1, j - 1]) +
                 [i + 1, i - 1].product([j + 2, j - 2])
@@ -13,7 +16,10 @@ board_h = board_a.to_h do |i, j|
   [[i, j], adjacency_a] # key-value pair
 end
 
-pp board_h
+# knight_moves method shows the shortest possible way to get from one
+# square (source) to another (dest) by outputting all squares (match_step)
+# the knight will stop on along the way.
+# knight_moves([3,3],[0,0]) == [[3,3],[1,2],[0,0]]
 
 def knight_moves(source, dest, hash)
   match_step = source
